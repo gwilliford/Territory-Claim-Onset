@@ -1,4 +1,4 @@
-setwd("C:/Users/gwill/Dropbox/Research/Dissertation/Data Analysis")
+setwd("C:/Users/gwill/Dropbox/Research/Dissertation/Data Analysis - Territory Onset")
 library(readr)
 library(readxl)
 library(haven)
@@ -38,9 +38,9 @@ dw   = read_dta("./data/bdm2s2_nation_year_data_may2002.dta") %>%
   select(ccode, year, W, S, GovCrises, strikes)
 
 chisols <- read_dta('./data/CHISOLSstyr4_0.dta')
-chisols <- dplyr::select(chisols, ccode, year, totalldrtrans, leadertrans, solschange, solschdum, solschange30, solsch30dum, solsminchange, solsminchdum)
+chisols <- dplyr::select(chisols, ccode, year, solschdum)
 
-archigos = read.dta13("C:/Users/gwill/Dropbox/Research/Dissertation/Data Analysis - Territory Onset/data/archdum1.dta")
+archigos = read.dta13("./data/archdum1.dta")
 archigos = archigos %>%
   rename("ccode" = "ccode1", "leadch" = "leadch1")
 
@@ -64,7 +64,7 @@ acd <- acd %>%
   summarize(cw = max(cw))
 
 ### States
-states <- read.csv("C:/Users/gwill/Dropbox/Research/Dissertation/Data Analysis - Territory Onset/data/system2016.csv")
+states <- read.csv("./data/system2016.csv")
 states <- states %>% select(ccode, year) %>% group_by(ccode) %>% mutate(statebirthyear = min(year))
 
 ### Merge Monadic Data
@@ -180,9 +180,9 @@ dtrade <- dtrade %>% select(ccode1, ccode2, dyad, year, flow1, flow2,
                             "trade" = "smoothtotrade",
                             flow1mil, flow2mil, "trademil" = "smoothtotrademil")
 
-tek = read.dta13("C:/Users/gwill/Dropbox/Research/Dissertation/Data Analysis - Territory Onset/data/Refugees - Data.dta", select.cols = c("dyad", "year", "TEK"))
+tek = read.dta13("./data/Refugees - Data.dta", select.cols = c("dyad", "year", "TEK"))
 
-terrchange = read.csv("C:/Users/gwill/Dropbox/Research/Dissertation/Data Analysis - Territory Onset/data/tc2014.csv")
+terrchange = read.csv("./data/tc2014.csv")
 terrchange$gainer = ifelse(terrchange$gainer < 0, NA, terrchange$gainer)
 terrchange$loser = ifelse(terrchange$loser < 0, NA, terrchange$loser)
 terrchange$dyad = undirdyads(terrchange, gainer, loser)
@@ -398,7 +398,7 @@ dat = dat %>%
     terrchangedum = if_else(terrchangenum > 0, 1, 0)
 )
 
-### Archigos variables
+### Dyadic leadership and solschange variables
 dat$leadchdy = dat$leadch1 == 1 | dat$leadch2 == 1
 dat$solschdy = dat$solschdum1 == 1 | dat$solschdum2 == 1
 
@@ -520,8 +520,7 @@ datlag <- dat %>%
     lagsolschdy2 = lag(solschdy, 2),
     leadcht12 = leadchdy == T | lagleadchdy1 == T | lagleadchdy2 == T,
     solscht12 = solschdy == T | lagsolschdy1 == T | lagsolschdy2 == T
-    
 )
-sum(duplicated(datlag[, c("dyad", "year")]))
-# write_rds(datlag, "C:/Users/gwill/Dropbox/Research/Dissertation/Data Analysis - Territory Onset/data/terrdatav2.RDS")
+
+#sum(duplicated(datlag[, c("dyad", "year")]))
 write_dta(datlag, "C:/Users/gwill/Dropbox/Research/Dissertation/Data Analysis - Territory Onset/data/terrdatav2.dta", version = 13)
