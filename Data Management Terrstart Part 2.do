@@ -139,15 +139,25 @@ by dyad: egen mindyadyear = min(year)
 gen yeardiff = minclaimyear - mindyadyear if minclaimyear != . & mindyadyear != .
 su yeardiff
 
-***** Replace missing for leadertrans vars
-replace leadchdy = 0 if leadchdy == .
-replace lagleadchdy1 = 0 if lagleadchdy1 == .
-replace lagleadchdy2 = 0 if lagleadchdy2 == .
-replace leadcht12 = 0 if leadcht12 == .
+***** Rename and replace missing for leadertrans and sols vars
 rename leadchdy leadchdy0
 rename lagleadchdy1 leadchdy1
 rename lagleadchdy2 leadchdy2
 rename leadcht12 leadchdy012
+rename solschdy solschdy0
+rename lagsolschdy1 solschdy1
+rename lagsolschdy2 solschdy2
+rename solscht12 solschdy012
+
+replace leadchdy0 = 0 if leadchdy0 == .
+replace leadchdy1 = 0 if leadchdy1 == .
+replace leadchdy2 = 0 if leadchdy2 == .
+replace leadchdy012 = 0 if leadchdy012 == .
+replace solschdy0 = 0 if solschdy0 == .
+replace solschdy1 = 0 if solschdy1 == .
+replace solschdy2 = 0 if solschdy2 == .
+replace solschdy012 = 0 if solschdy012 == .
+
 
 **** Cleanup
 drop tc* sal* 
