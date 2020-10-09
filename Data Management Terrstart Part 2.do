@@ -1,6 +1,8 @@
 cd "C:\Users\gwill\Dropbox\Research\Dissertation\Data Analysis - Territory Onset\data\"
 
+********************************************************************************
 **** Format ICOW data
+********************************************************************************
 use ICOWprovyr101, clear
 sort dyad year
 by dyad: egen minclaimyear = min(year)
@@ -9,7 +11,7 @@ gen terriss = 1
 save icow_modified.dta, replace
 
 ********************************************************************************
-* Merge data
+**** Merge data
 ******************************************************************************** 
 use terrdatav2.dta, clear
 
@@ -71,8 +73,8 @@ drop _*
 *replace fail_histany = 0 if fail_histany == .
 
 **** New vars
-gen leadtransany = leadertrans1 == 1 | leadertrans2 == 1
-gen solschany = solschdum1 == 1 | solschdum2 == 1
+* gen leadtransany = leadertrans1 == 1 | leadertrans2 == 1
+* gen solschany = solschdum1 == 1 | solschdum2 == 1
 **** Replace missing
 replace terriss = 0 if terriss == .
 *replace kgd_rivalry_year = 0 if kgd_rivalry_year == .
@@ -109,6 +111,19 @@ replace majpower = 1 if (ccode1 == 710 | ccode2 == 710) & year >= 1950
 replace majpower = 1 if (ccode1 == 740 | ccode2 == 740) & year >= 1895 & year <= 1945
 replace majpower = 1 if (ccode1 == 740 | ccode2 == 740) & year >= 1991
 
+replace majpower = 1 if (ccode1 == 200 | ccode2 == 200) & year >= 1816
+replace majpower = 1 if (ccode1 == 220 | ccode2 == 220) & ((year >= 1816 & year <= 1940) | year >= 1945) 
+replace majpower = 1 if (ccode1 == 255 | ccode2 == 255) & year >= 1816 & year <= 1918 
+replace majpower = 1 if (ccode1 == 255 | ccode2 == 255) & year >= 1925 & year <= 1945
+replace majpower = 1 if (ccode1 == 255 | ccode2 == 255) & year >= 1991
+replace majpower = 1 if (ccode1 == 300 | ccode2 == 300) & year >= 1816 & year <= 1918
+replace majpower = 1 if (ccode1 == 325 | ccode2 == 325) & year >= 1860 & year <= 1943
+replace majpower = 1 if (ccode1 == 365 | ccode2 == 365) & year >= 1816 & year <= 1917
+replace majpower = 1 if (ccode1 == 365 | ccode2 == 365) & year >= 1922
+replace majpower = 1 if (ccode1 == 710 | ccode2 == 710) & year >= 1950
+replace majpower = 1 if (ccode1 == 740 | ccode2 == 740) & year >= 1895 & year <= 1945
+replace majpower = 1 if (ccode1 == 740 | ccode2 == 740) & year >= 1991
+
 replace lrival = 0 if lrival == .
 replace lcwany = 0 if lcwany == .
 replace TEK = 0 if TEK == . & year > 1945
@@ -123,6 +138,16 @@ by dyad: egen mindyadyear = min(year)
 *(minclaimyear != mindyadyear) & minclaimyear == year
 gen yeardiff = minclaimyear - mindyadyear if minclaimyear != . & mindyadyear != .
 su yeardiff
+
+***** Replace missing for leadertrans vars
+replace leadchdy = 0 if leadchdy == .
+replace lagleadchdy1 = 0 if lagleadchdy1 == .
+replace lagleadchdy2 = 0 if lagleadchdy2 == .
+replace leadcht12 = 0 if leadcht12 == .
+rename leadchdy leadchdy0
+rename lagleadchdy1 leadchdy1
+rename lagleadchdy2 leadchdy2
+rename leadcht12 leadchdy012
 
 **** Cleanup
 drop tc* sal* 
