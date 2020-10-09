@@ -1,39 +1,24 @@
-setwd("C:/Users/gwill/Dropbox/Research/Dissertation/Data Analysis - Territory Onset/data")
-library(desctools)
+setwd("C:/Users/gwill/Dropbox/Research/Dissertation/Data Analysis - Territory Onset")
+library(readstata13)
+library(dplyr)
 
-newgene <- datlag
-# fullterr <- read_csv("C:/Users/gwill/Dropbox/Research/Dissertation/Data Analysis - Territory Onset/data/ICOW Territory Provisional Data 1.01/ICOWprovyr101.csv") %>%
-#   filter(chal != 2220 & tgt != 2200)
-# fullterr = fullterr %>% 
-#   group_by(claimdy) %>% 
-#   mutate(
-#     cltermyr  = max(year),
-#     clterm    = if_else(cltermyr == year, 1, 0),
-#   )
-# terr <- fullterr %>%
-#   arrange(dyad, year) %>%
-#   group_by(dyad) %>%
-#   mutate(
-#     one = 1,
-#     cltermyr  = max(year),
-#     clterm    = if_else(cltermyr == year, 1, 0),
-#     clstop    = cumsum(one),
-#     clstart   = clstop - 1,
-#   ) %>% 
-#   ungroup(fullterr)
+##### Load data -------------------------------------------------------------------------
+# rm(list=setdiff(ls(), "eu3"))
+eu3 = read.dta13("./data/eu3.dta")
+eu3 = eu3 %>% mutate(
+  lagsolsch = lag(solschany),
+  lagleadch_chisols = lag(leadtransany)
+)
 
-terr_claimdy <- read_csv("C:/Users/gwill/Dropbox/Research/Dissertation/Data Analysis - Territory Onset/data/ICOW Territory Provisional Data 1.01/ICOWprov101.csv") %>% 
-  select(dyad, begclaim, endclaim)
+eu3$solsch_tandlag = eu3$solschany == 1 | eu3$lagsolsch == 1 
+eu3$tin = eu3$year > 1944
+#eu3$twomaj = eu3$m
 
-# Code beginning and end years
-terr_claimdy$begclaim = as.character(terr_claimdy$begclaim)
-terr_claimdy$endclaim = as.character(terr_claimdy$endclaim)
-terr_claimdy$byr = substr(terr_claim$begclaim, start = 1, stop = 4)
-terr_claimdy$eyr = substr(terr_claim$endclaim, start = 1, stop = 4)
+# Shock variables
+eu3$independence = (eu3$year >= eu3$statebirthyear1 & eu3$year <= eu3$statebirthyear1 + 5) | (eu3$year >= eu3$statebirthyear2 & eu3$year <= eu3$statebirthyear2 + 5)
+eu3$ww1 = eu3$year >= 1914 & eu3$year <= 1923
+eu3$ww2 = eu3$year >= 1937 & eu3$year <= 1950
+eu3$coldwar = eu3$year >= 1989 & eu3$year <= 1994
+eu3$systchange = eu3$year >= 1859 & eu3$year <= 1977
 
-# 
-  group_by(dyad, yeterr_claim = terr_claimdy %>% 
-ar) %>% 
-  summarize(
-    
-  )
+#rm(list=setdiff(ls(), c("eu3", "d", "e", "f", "g", "h", "i", "j")))
