@@ -2,7 +2,23 @@ setwd("C:/Users/gwill/Dropbox/Research/Dissertation/Data Analysis - Territory On
 library(readstata13)
 library(dplyr)
 
-##### Load data -------------------------------------------------------------------------
+################################################################################
+### Data management functions
+################################################################################
+
+undirdyads <- function(df, ccode1, ccode2) {
+  attach(df)
+  ccodes = cbind(ccode1, ccode2)
+  cmin   = sprintf("%03d", matrixStats::rowMins(ccodes))
+  cmax   = sprintf("%03d", matrixStats::rowMaxs(ccodes))
+  dyad = as.numeric(paste(cmin, cmax, sep = ""))
+  detach(df)
+  return(dyad)
+}
+
+################################################################################
+### Load data from stata
+################################################################################
 # rm(list=setdiff(ls(), "eu3"))
 eu3 = read.dta13("./data/eu3.dta")
 eu3 = eu3 %>% mutate(
@@ -10,9 +26,43 @@ eu3 = eu3 %>% mutate(
   lagleadch_chisols = lag(leadtransany)
 )
 
-eu3$solsch_tandlag = eu3$solschany == 1 | eu3$lagsolsch == 1 
+################################################################################
+# Format colonial contiguity data
+################################################################################
+
+# colonycontig = read.dta13("./data/contcold.dta") oldversion
+colonycontig = read.dta13("./data/contdird.dta")
+colonycontig = select(colonycontig, dyad, year)
+colonycontig$colonycontig = 1
+
+eu3 = left_join(eu3, colonycontig)
+
+################################################################################
+# Format postcolonial history data
+################################################################################
+
+postcolonial = read.csv("./data/coldata110.csv")
+colnames(postcolonial)[1] = "colony"
+postcolonial = postcolonial %>%
+  select(colony, ColRuler, IndDate)
+postcolonial$dyad = undirdyads(postcolonial, colony, ColRuler)
+postcolonial$IndDate = as.character(postcolonial$IndDate)
+postcolonial$colindyear = as.integer(substr(postcolonial$IndDate, 1, 4))
+postcolonial = select(postcolonial, -IndDate, -colony, -ColRuler)
+eu3 = left_join(eu3, postcolonial)
+
+################################################################################
+### Code new variables
+################################################################################
+
+# Postcolonial history
+eu3$postcolonial = eu3$year >= eu3$colindyear 
+
+# Colonial contiguity
+eu3$colonycontig = replace(colonycontig, is.na(colonycontig), 0)
+
+# International norms
 eu3$tin = eu3$year > 1944
-#eu3$twomaj = eu3$m
 
 # Shock variables
 eu3$independence = (eu3$year >= eu3$statebirthyear1 & eu3$year <= eu3$statebirthyear1 + 5) | (eu3$year >= eu3$statebirthyear2 & eu3$year <= eu3$statebirthyear2 + 5)
