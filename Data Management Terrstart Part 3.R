@@ -62,7 +62,17 @@ eu3$postcolonial = eu3$year >= eu3$colindyear
 eu3$colonycontig = replace(colonycontig, is.na(colonycontig), 0)
 
 # International norms
-eu3$tin = eu3$year > 1944
+  # 1958 convention on the high seas
+  # LOST comes into force in 1994
+  # LOST convention concluded in 1982
+  # Lost convention began 1973
+eu3$convhighseas = eu3$year >= 1958
+eu3$lostconvbeg = eu3$year >= 1973
+eu3$lostconvend = eu3$year >= 1982
+eu3$lostpassed = eu3$year >= 1994
+eu3$decolonization = eu3$year >= 1960
+eu3$tin = eu3$year > 1945
+
 
 # Shock variables
 eu3$independence = (eu3$year >= eu3$statebirthyear1 & eu3$year <= eu3$statebirthyear1 + 5) | (eu3$year >= eu3$statebirthyear2 & eu3$year <= eu3$statebirthyear2 + 5)
