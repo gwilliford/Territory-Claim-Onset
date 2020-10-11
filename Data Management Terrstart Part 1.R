@@ -385,7 +385,7 @@ dat$defense = replace(dat$defense, is.na(dat$defense), 0)
 dat$lcw = ifelse(dat$lcw1 == 1 | dat$lcw2 == 1, 1, 0)
 
 ### Create tek variables
-dat$TEK = ifelse(is.na(dat$TEK) & dat$year >= 1946, 0, dat$TEK)
+dat$TEK = ifelse(is.na(dat$TEK) & dat$year >= 1960, 0, dat$TEK)
 
 ### Create terrchange variables
 dat$terrchangenum = ifelse(is.na(dat$terrchangenum), 0, 1)
