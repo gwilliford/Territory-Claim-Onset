@@ -55,6 +55,10 @@ eu3 = left_join(eu3, postcolonial)
 ### Code new variables
 ################################################################################
 
+# Regime change
+eu3$regtrans = eu3$regtrans1 == 1 | eu3$regtrans2 == 1
+eu3$regtrans = replace(eu3$regtrans, is.na(eu3$regtrans), 0)
+
 # Postcolonial history
 eu3$postcolonial = eu3$year >= eu3$colindyear 
 
@@ -81,4 +85,23 @@ eu3$ww2 = eu3$year >= 1937 & eu3$year <= 1950
 eu3$coldwar = eu3$year >= 1989 & eu3$year <= 1994
 eu3$systchange = eu3$year >= 1859 & eu3$year <= 1977
 
-#rm(list=setdiff(ls(), c("eu3", "d", "e", "f", "g", "h", "i", "j")))
+# Polrel
+eu3$polrel = eu3$majpower == 1 | eu3$contdir == 1
+
+# Logtime interactions
+eu3$lnt = log(eu3$stop)
+eu3$independencelnt = eu3$independence * eu3$lnt
+eu3$lnccdistlnt = eu3$lnccdist * eu3$lnt
+eu3$demdylnt = eu3$demdy * eu3$lnt
+eu3$lagterrchlnt = eu3$lagterrch * eu3$lnt
+
+# Recode missing based on dates
+eu3$TEK = ifelse(eu3$year < 1960, NA, eu3$TEK)
+eu3$leadchdy0 = replace(eu3$leadchdy0, eu3$year < 1875, NA)
+eu3$leadchdy1 = replace(eu3$leadchdy0, eu3$year < 1875, NA)
+eu3$leadchdy2 = replace(eu3$leadchdy0, eu3$year < 1875, NA)
+eu3$leadchdy012 = replace(eu3$leadchdy0, eu3$year < 1875, NA)
+eu3$solschdy0 = replace(eu3$solschdy0, eu3$year < 1918, NA)
+eu3$solschdy1 = replace(eu3$solschdy0, eu3$year < 1918, NA)
+eu3$solschdy2 = replace(eu3$solschdy0, eu3$year < 1918, NA)
+eu3$solschdy012 = replace(eu3$solschdy0, eu3$year < 1918, NA)
