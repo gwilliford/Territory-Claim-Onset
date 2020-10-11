@@ -1,18 +1,18 @@
-varlist = c("Leadership Change_{t}" = "leadchdy0", 
-            "Leadership Change_{t-1}" = "leadchdy1", 
-            "Leadership Change_{t-2}" = "leadchdy2",
-            "Leadership Change_{t, t-1, t-2}" = "leadchdy012",
-            "Coalition Change_{t}" = "solschdy0", 
-            "Coalition Change_{t-1}" = "solschdy1", 
-            "Coalition Change_{t-2}" = "solschdy2",
-            "Coalition Change_{t, t-1, t-2}" = "solschdy012",
+varlist = c("Leadership Change$_{t}$" = "leadchdy0", 
+            "Leadership Change$_{t-1}$" = "leadchdy1", 
+            "Leadership Change$_{t-2}$" = "leadchdy2",
+            "Leadership Change$_{t, t-1, t-2}$" = "leadchdy012",
+            "Coalition Change$_{t}$" = "solschdy0", 
+            "Coalition Change$_{t-1}$" = "solschdy1", 
+            "Coalition Change$_{t-2}$" = "solschdy2",
+            "Coalition Change$_{t, t-1, t-2}$" = "solschdy012",
             "Civil War" = "lcwany", 
             "Independence" = "independenceTRUE", 
             "Independence $\\times \\ln(t)$" = "independencelnt", 
             "Percent Change Capabilities_t" = "pchcaprat",
-            "Percent Chagne Capabilities_{t-1}" = "lpchcap",
-            "MID_{t}" = "bdymid",
-            "MID_{t-1}" = "lbdymid",
+            "Percent Chagne Capabilities$_{t-1}$" = "lpchcap",
+            "MID$_{t}$" = "bdymid",
+            "MID$_{t-1}$" = "lbdymid",
             "System Change (1859-1877)" = "systchange", 
             "World War I" = "ww1",
             "World War II" = "ww2",
@@ -128,14 +128,22 @@ hrtab = function(..., varlist = NULL, modnames = NULL, sigonly = T, siglevel = 0
   ftab
 }
 
-# This works
-leadertab_hr = hrtab(l0, l1, l2, varlist = varlist)
+# This works (adding l012 breaks it)
 # This doesn't
-leadertab_hr = hrtab(l0, l1, l2, l012, varlist = varlist)
 # Remove insignificant results
 
+leadertab_res = tvtable(l0, l1, l2, l012, varlist = varlist)
+leadertab_res <- tvtable_xtable(leadertab_res, digits = 2)
+print(leadertab_res,
+      booktabs = T,
+      sanitize.text.function = identity,
+      include.rownames = F,
+      include.colnames = F,
+      # add.to.row = addtorow,
+      file = 'C:/Users/gwill/Dropbox/Research/Dissertation/Manuscript/chapter4/tab/leadertab_res.tex')
+### fix double modelnames
+### fix 0 after nobs
+### some stars aren't shoing up - only three star
+leadertab_hr = hrtab(l0, l1, l2, varlist = varlist)
 
-l0_tab <- tvtable(cox2, cure2, varlist = vl, modnames = F)
 
-
-l0_tab_hr <- cbind(l0$, exp(l0$coefficients))
