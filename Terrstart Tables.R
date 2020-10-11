@@ -50,16 +50,16 @@ hrtab = function(..., varlist = NULL, modnames = NULL) {
   if (sum(class %notin% c("tvcure", "coxph")) > 0) stop("Models must be of class coxph or tvcure.")
   tabnames <- list()
   mn <- list()
-  ul <- vector()
-  
+
   for (i in 1:length(models)) {
     model <- models[[i]]
-    allnames <- model$bnames
-    tab = cbind(allnames, exp(model$curemod$latency_fit$coefficients))
-    # rownames(tab) = allnames
+    tabnames[[i]] <- model$bnames
+    tab = cbind(tabnames, exp(model$curemod$latency_fit$coefficients))
     assign(paste0("tab", i), tab)
   }    
+  
   # order by varlist
+  allnames <- unique(unlist(tabnames))
   if (is.null(varlist)) {
     varnames <- allnames
     varlabs <- allnames
@@ -78,7 +78,9 @@ hrtab = function(..., varlist = NULL, modnames = NULL) {
     # dex <- as.vector(rbind(index3, ""))
     varlabs = index3
   }
+  
   # Combine tables
+  browser()
   tdf  <- matrix(varnames, ncol = 1)
   colnames(tdf)[1] <- "vn"
   for (i in 1:len) {
@@ -117,18 +119,20 @@ hrtab = function(..., varlist = NULL, modnames = NULL) {
   #   }
   # }
   if (is.null(modnames)) {
-    mn[[i]] = paste("\\multicolumn{1}{c}{Model ", i, "}", sep = "")
-  } else
+    for (i in 1:len) {
+      mn[[i]] = paste("\\multicolumn{1}{c}{Model ", i, "}", sep = "")
+    }
+  } else {
     mn[[i]] = modnames[i]
-  mn2 <- c("", unlist(mn))
-  mn2 <- replace(mn2, mn2 == "blank", "")
-  
-  # test <- c(1, 2, 3, 4)
-
+  }
+  browser()
+  mn2 <- c(unlist(mn))
+  # mn2 <- replace(mn2, mn2 == "blank", "")
   ftab <- rbind(mn2, tdf)
   rownames(ftab) <- NULL
   ftab
-}; hrtab(l0, varlist = varlist)
+}
+hrtab(l0, l1, varlist = varlist)
 
 
 l0_tab <- tvtable(cox2, cure2, varlist = vl, modnames = F)
