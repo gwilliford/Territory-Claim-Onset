@@ -41,7 +41,7 @@ print(l0_tab,
       file = 'C:/Users/gwill/Dropbox/Research/Dissertation/Manuscript/chapter4/tab/leadertab.tex')
 ### fix 0 after nobs
 
-hrtab = function(..., varlist = NULL, modnames = NULL) {
+hrtab = function(..., varlist = NULL, modnames = NULL, sigonly = T, siglevel = 0.05) {
   
   models <- list(...)
   len = length(models)
@@ -50,14 +50,23 @@ hrtab = function(..., varlist = NULL, modnames = NULL) {
   if (sum(class %notin% c("tvcure", "coxph")) > 0) stop("Models must be of class coxph or tvcure.")
   tabnames <- list()
   mn <- list()
-
+  browser()
+  
+  # Create table
   for (i in 1:length(models)) {
     model <- models[[i]]
     tabnames[[i]] <- model$bnames
     tab = cbind(tabnames, exp(model$curemod$latency_fit$coefficients))
+    if (sigonly == T) {
+      bpval <- as.numeric(model$b_pvalue)
+      tab[, 2] = replace(tab[, 2], bpval > siglevel, NA)
+      # for (j in 1:length(bpval)) {
+      #   if (bpval[j] > siglevel) replace(tab, tab[j, 2], NA)
+      # }
+    }
     assign(paste0("tab", i), tab)
-  }    
-  
+  }  
+
   # order by varlist
   allnames <- unique(unlist(tabnames))
   if (is.null(varlist)) {
@@ -73,7 +82,6 @@ hrtab = function(..., varlist = NULL, modnames = NULL) {
     # vn <- as.vector(rbind(vn, ""))
     nout <- allnames[allnames %notin% vn]
     varnames <- c(vn, nout)
-    
     varlabs <- varnames
     # dex <- as.vector(rbind(index3, ""))
     varlabs = index3
@@ -85,39 +93,25 @@ hrtab = function(..., varlist = NULL, modnames = NULL) {
   colnames(tdf)[1] <- "vn"
   for (i in 1:len) {
     tab <- eval(parse(text = paste0("tab", i)))
-    rownames(tab) = NULL
     colnames(tab)[1] = "vn"
+    tab[, "vn"] = tabnames[[i]]
     tdf <- merge(tdf, tab, by = "vn", all.x = T, sort = F)
   }
   ind <- match(varnames, tdf[, 1])
   tdf <- tdf[ind, ]
   tdf[, 1] <- varlabs
-  colnames(tdf)[1] <- c(" ")
-  cn <- colnames(tdf)
-  ind <- startsWith(cn, "Hazard Ratio")
-  cn <- replace(cn, ind, "Hazard Ratio")
-  cn[1] <- ""
+  # colnames(tdf)[1] <- c(" ")
+  #cn <- colnames(tdf)
+  # ind <- startsWith(cn, "Hazard Ratio")
+  # cn <- replace(cn, ind, "Hazard Ratio")
+  # cn[1] <- ""
   colnames(tdf) <- NULL
-  for (j in seq(2, nrow(tdf), 2)) {
-    tdf[j, 1] <- ""
-  }
+  # for (j in seq(2, nrow(tdf), 2)) {
+  #   tdf[j, 1] <- ""
+  # }
   tdf <- as.matrix(tdf)
   
-  
   # Create model names
-  # if (is.null(modnames)) {
-  #   if (nc == 1) {
-  #     mn[[i]] <- paste("\\multicolumn{1}{c}{Model ", i, "}", sep = "")
-  #   } else {
-  #     mn[[i]] <- paste("\\multicolumn{2}{c}{Model ", i, "}", sep = "")
-  #   }
-  # } else {
-  #   if (nc == 1) {
-  #     mn[[i]] <- modnames[i]
-  #   } else {
-  #     mn[[i]] <- c(modnames[i], "blank")
-  #   }
-  # }
   if (is.null(modnames)) {
     for (i in 1:len) {
       mn[[i]] = paste("\\multicolumn{1}{c}{Model ", i, "}", sep = "")
@@ -125,14 +119,20 @@ hrtab = function(..., varlist = NULL, modnames = NULL) {
   } else {
     mn[[i]] = modnames[i]
   }
-  browser()
+
   mn2 <- c(unlist(mn))
   # mn2 <- replace(mn2, mn2 == "blank", "")
+  
   ftab <- rbind(mn2, tdf)
   rownames(ftab) <- NULL
   ftab
 }
-hrtab(l0, l1, varlist = varlist)
+
+# This works
+leadertab_hr = hrtab(l0, l1, l2, varlist = varlist)
+# This doesn't
+leadertab_hr = hrtab(l0, l1, l2, l012, varlist = varlist)
+# Remove insignificant results
 
 
 l0_tab <- tvtable(cox2, cure2, varlist = vl, modnames = F)
