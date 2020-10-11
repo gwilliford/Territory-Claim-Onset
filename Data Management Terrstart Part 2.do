@@ -96,20 +96,6 @@ gen lcwany = lcw1 == 1 | lcw2 == 1
 gen lpchcap = l.pchcaprat
 
 **** Generate major power variables
-gen majpower = (ccode1 == 2 | ccode2 == 2) & year >= 1898
-replace majpower = 1 if (ccode1 == 200 | ccode2 == 200) & year >= 1816
-replace majpower = 1 if (ccode1 == 220 | ccode2 == 220) & ((year >= 1816 & year <= 1940) | year >= 1945) 
-replace majpower = 1 if (ccode1 == 255 | ccode2 == 255) & year >= 1816 & year <= 1918 
-replace majpower = 1 if (ccode1 == 255 | ccode2 == 255) & year >= 1925 & year <= 1945
-replace majpower = 1 if (ccode1 == 255 | ccode2 == 255) & year >= 1991
-replace majpower = 1 if (ccode1 == 300 | ccode2 == 300) & year >= 1816 & year <= 1918
-replace majpower = 1 if (ccode1 == 325 | ccode2 == 325) & year >= 1860 & year <= 1943
-replace majpower = 1 if (ccode1 == 365 | ccode2 == 365) & year >= 1816 & year <= 1917
-replace majpower = 1 if (ccode1 == 365 | ccode2 == 365) & year >= 1922
-replace majpower = 1 if (ccode1 == 710 | ccode2 == 710) & year >= 1950
-replace majpower = 1 if (ccode1 == 740 | ccode2 == 740) & year >= 1895 & year <= 1945
-replace majpower = 1 if (ccode1 == 740 | ccode2 == 740) & year >= 1991
-
 gen mp1 = (ccode1 == 2) & year >= 1898
 replace mp1 = 1 if (ccode1 == 200) & year >= 1816
 replace mp1 = 1 if (ccode1 == 220) & ((year >= 1816 & year <= 1940) | year >= 1945) 
