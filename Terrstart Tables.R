@@ -7,16 +7,23 @@ varlist = c("Leadership Change$_{t}$" = "leadchdy0",
             "Coalition Change$_{t-2}$" = "solschdy2",
             "Coalition Change$_{t, t-1, t-2}$" = "solschdy012",
             "Civil War" = "lcwany", 
-            "Independence" = "independenceTRUE", 
+            "Independence$_t$" = "independenceTRUE", 
+            "Independence$_t$" = "independence", 
+            "Independence$_{t-1}$" = "lindependenceTRUE", 
+            "Independence$_{t-1}$" = "lindependence", 
             "Independence $\\times \\ln(t)$" = "independencelnt", 
-            "Percent Change Capabilities_t" = "pchcaprat",
-            "Percent Chagne Capabilities$_{t-1}$" = "lpchcap",
+            "Regime Transition$_t$" = "regtransdy",
+            "Regime Transition$_{t-1}$" = "lregtransdy",
+            "Regime Transition $\\times \\ln(t)$" = "regtransdylnt",
+            "Percent Change Capabilities$_{t}$" = "pchcaprat",
+            "Percent Change Capabilities$_{t-1}$" = "lpchcap",
             "MID$_{t}$" = "bdymid",
             "MID$_{t-1}$" = "lbdymid",
-            "System Change (1859-1877)" = "systchange", 
-            "World War I" = "ww1",
-            "World War II" = "ww2",
-            "Coldwar Termination" = "coldwar",
+            "System Change (1859-1877)" = "systchangeTRUE", 
+            "World War I" = "ww1TRUE",
+            "World War II" = "ww2TRUE",
+            "World War II $\\times \\ln(t)$" = "ww2lnt",
+            "Coldwar Termination" = "coldwarTRUE",
             "Distance" = "lnccdist",
             "Previous Territorial Change" = "lagterrch", 
             "Former Colony" = "postcolonial",
@@ -28,12 +35,52 @@ varlist = c("Leadership Change$_{t}$" = "leadchdy0",
             "Defensive Alliance" = "defense", 
             "Joint Democracy" = "demdy", 
             "Rivalry" = "trival", 
-            "Territorial Integrity Norm" = "tin")
+            "Territorial Integrity Norm" = "tin", 
+            "Intercept" = "Intercept")
+
+
+# mnames = c("", "\multicolumn{2}{c}{Model 1}", "&", "\multicolumn{2}{c}{Model 2}", " &")
+# mnames2 = c("", "Model 1", "Model 2")
+
+itab = xtable(tvtable(i0_cure, i1_cure, varlist = varlist))
+ltab = xtable(tvtable(l0_cure, l1_cure, varlist = varlist))
+stab = xtable(tvtable(s0_cure, s1_cure, varlist = varlist))
+#stab_prd = xtable(tvtable(s0_cox_prd, s1_cox_prd, s0_cox_riv, s1_cox_riv, varlist = varlist))
+stab_prd = xtable(tvtable(s0_cox_prd, s0_cox_riv, varlist = varlist))
+# colnames(itab) = c("", "\multicolumn{2}{c}{Model 1}", "&", "\multicolumn{2}{c}{Model 2}", " &")
+# colnames(ltab) = mnames
+# colnames(stab) = mnames
+# colnames(stab_prd) = mnames2
+
+print(itab,
+      booktabs = F,
+      sanitize.text.function = identity,
+      include.rownames = F,
+      include.colnames = F)
+
+print(ltab,
+      booktabs = Fm
+      sanitize.text.function = identity,
+      include.rownames = F,
+      include.colnames = F)
+print(stab,
+      booktabs = F,
+      sanitize.text.function = identity,
+      include.rownames = F,
+      include.colnames = F)
+print(stab_prd,
+      booktabs = F,
+      sanitize.text.function = identity,
+      include.rownames = F,
+      include.colnames = F)
+
+
+
 
 l0_tab = tvtable(l0, varlist = varlist)
 l0_tab <- tvtable_xtable(l0_tab, digits = 2)
 print(l0_tab,
-      booktabs = T,
+      booktabs = F,
       sanitize.text.function = identity,
       include.rownames = F,
       include.colnames = F,
@@ -135,7 +182,7 @@ hrtab = function(..., varlist = NULL, modnames = NULL, sigonly = T, siglevel = 0
 leadertab_res = tvtable(l0, l1, l2, l012, varlist = varlist)
 leadertab_res <- tvtable_xtable(leadertab_res, digits = 2)
 print(leadertab_res,
-      booktabs = T,
+      booktabs = F,
       sanitize.text.function = identity,
       include.rownames = F,
       include.colnames = F,
@@ -146,4 +193,7 @@ print(leadertab_res,
 ### some stars aren't shoing up - only three star
 leadertab_hr = hrtab(l0, l1, l2, varlist = varlist)
 
-
+saveRDS(s0_cure, "./mods/s0_cure.RDS")
+saveRDS(s1_cure, "./mods/s1_cure.RDS")
+saveRDS(l0_cure, "./mods/l0_cure.RDS")
+saveRDS(s1_cure, "./mods/l1_cure.RDS")
