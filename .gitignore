@@ -1,3 +1,4 @@
 data/
 mods/
 .RDataTmp
+.RData
