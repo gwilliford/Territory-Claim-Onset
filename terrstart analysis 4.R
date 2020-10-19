@@ -9,44 +9,151 @@ registerDoSNOW(cl)
 cmpfun(tvcure)
 enableJIT(3)
 
+##### Leadership change cox models -------------------------------------------------
 
-eu3$polrel = eu3$majpower == 1 | eu3$contdir == 1
-eu3$lnt = log(eu3$stop)
-eu3$independencelnt = eu3$independence * eu3$lnt
-eu3$lnccdistlnt = eu3$lnccdist * eu3$lnt
-eu3$demdylnt = eu3$demdy * eu3$lnt
-eu3$lagterrchlnt = eu3$lagterrch * eu3$lnt
-eu3$TEK = ifelse(eu3$year < 1960, NA, eu3$TEK)
+l0_cox = coxph(Surv(start, stop, fail) ~ leadchdy0 + lcwany + independence + independencelnt + 
+                 lagterrch + lagterrchlnt + lnccdist + lnccdistlnt + postcolonial + colonycontig + 
+                 majpower + defense + demdy + trival + tin,
+               data = eu3); summary(l0_cox)
+l1_cox = coxph(Surv(start, stop, fail) ~ leadchdy1 + lcwany + independence + independencelnt + 
+                 lagterrch + lagterrchlnt + lnccdist + lnccdistlnt + 
+                 majpower + defense + demdy + trival,
+               data = eu3); summary(l1_cox)
+l2_cox = coxph(Surv(start, stop, fail) ~ leadchdy2 + lcwany + independence + independencelnt + 
+                 lagterrch + lagterrchlnt + lnccdist + lnccdistlnt +
+                 majpower + defense + demdy + trival,
+               data = eu3); summary(l2_cox)
+l012_cox = coxph(Surv(start, stop, fail) ~ leadchdy012 + lcwany + independence + independencelnt + 
+                   lagterrch + lagterrchlnt + lnccdist + lnccdistlnt + 
+                   majpower + defense + demdy + trival, 
+                 data = eu3); summary(l012_cox)
+cox.zph(lc0)
+cox.zph(lc1)
+cox.zph(lc2)
+cox.zph(lc012)
 
-##### Leadership change models -------------------------------------------------
+##### Leadership chane cure models -------------------------------------------------
 
-l0 = tvcure(Surv(start, stop, fail) ~
+l0_cure = tvcure(Surv(start, stop, fail) ~
               leadchdy0 + lcwany + independence,
-            cureform = ~ lagterrch + lnccdist + 
-              majpower + defense + demdy + trival,
+            cureform = ~ lnccdist + onemp + twomp + lagterrch + 
+              defense + demdy + trival,
             data = eu3,
-            brglm = F, var = T, nboot = 30); summary(l0)
+            brglm = F, var = T, nboot = 30); summary(l0_cure)
+# Add regtransvar, postcolonial, colonycontig
+l0_cureb = tvcure(Surv(start, stop, fail) ~
+                   leadchdy0 + independence + regtransshock,
+                 cureform = ~ lnccdist + lagterrch + postcolonial + colonycontig + 
+                   onemp + twomp + defense + demdy + trival,
+                 data = eu3,
+                 brglm = F, var = T, nboot = 30); summary(l0_cureb)
+# Add runsummid, igo, tin
+l0_curec = tvcure(Surv(start, stop, fail) ~
+                    leadchdy0 + independence + regtransshock,
+                  cureform = ~ lnccdist + lagterrch + postcolonial + colonycontig + 
+                    onemp + twomp + defense + demdy + trival + runsummid + 
+                    igosum + tin,
+                  data = eu3,
+                  brglm = F, var = T, nboot = 30); summary(l0_curec)
+# Chane domestic prox vars
+l0_cured = tvcure(Surv(start, stop, fail) ~
+                    leadchdy0 + independence + regtransshock,
+                  cureform = ~ lnccdist + lagterrch + postcolonial + colonycontig + 
+                    onemp + twomp + defense + demdy + trival + runsummid,
+                  data = eu3,
+                  brglm = F, var = T, nboot = 30); summary(l0_cured)
+  # cwany, regrans, and indepdencend (no shock) cause problems
+# Add tek
+l0_curef = tvcure(Surv(start, stop, fail) ~
+                    leadchdy0 + independence,
+                  cureform = ~ lnccdist + lagterrch + postcolonial + colonycontig + tek +
+                    onemp + twomp + defense + demdy + trival + runsummid,
+                  data = eu3,
+                  brglm = F, var = T, nboot = 30); summary(l0_curef)
+# Contiguous dyads only
+l0_cureg = tvcure(Surv(start, stop, fail) ~
+                    leadchdy0 + independence + independencelnt + cwany + regtrans,
+                  cureform = ~ lagterrch + 
+                    onemp + twomp + defense + demdy + trival,
+                  data = eu3, subset = eu3$contdir == 1,
+                  brglm = F, var = T, nboot = 30); summary(l0_cureg)
+# Contigous dyads w/o distance
+l0_cureh = tvcure(Surv(start, stop, fail) ~
+                    leadchdy0 + independence + regtransshock,
+                  cureform = ~ lagterrch + postcolonial + colonycontig + tek +
+                    onemp + twomp + defense + demdy + trival + runsummid,
+                  data = eu3, subset = eu3$contdir == 1,
+                  brglm = F, var = T, nboot = 30); summary(l0_cureh)
 
-l1 = tvcure(Surv(start, stop, fail) ~
+
+l0_curej = tvcure(Surv(start, stop, fail) ~
+                    leadchdy0 + independence + independencelnt +,
+                  cureform = ~ lnccdist + lagterrch + postcolonial + colonycontig + tek + 
+                    onemp + twomp + defense + demdy + trival,
+                  data = eu3,
+                  brglm = F, var = T, nboot = 30); summary(l0_curej)
+
+l0_curek = tvcure(Surv(start, stop, fail) ~
+                    leadchdy0 + independence + independencelnt + 
+                    pchcaprat + bdymid + systchange + ww1 + ww2 + coldwar,
+                  cureform = ~ lnccdist + lagterrch + postcolonial + colonycontig + 
+                    onemp + twomp + defense + demdy + trival,
+                  data = eu3,
+                  brglm = F, var = T, nboot = 30); summary(l0_curek)
+
+l0_curel = tvcure(Surv(start, stop, fail) ~
+                    leadchdy0 + independence + independencelnt + lcwany +
+                    pchcaprat + bdymid + systchange + ww1 + ww2 + coldwar,
+                  cureform = ~ lnccdist + lagterrch + postcolonial + colonycontig + 
+                    onemp + twomp + defense + demdy + trival,
+                  data = eu3,
+                  brglm = F, var = T, nboot = 30); summary(l0_curel)
+l0_curem = tvcure(Surv(start, stop, fail) ~
+                    pchcaprat + bdymid + systchange + ww1 + ww2 + coldwar,
+                  cureform = ~ lnccdist + lagterrch + postcolonial + colonycontig + 
+                    onemp + twomp + defense + demdy + trival,
+                  data = eu3,
+                  brglm = F, var = T, nboot = 30); summary(l0_curem)
+
+# Add international shocks
+# No tek, igosum, tin, regtrans (miscoded), runsummid
+# Others not included: postcolonialism, LOST
+# Results go away wrt contigous states (Mostly?)
+
+
+# international stakes
+l1_cure = tvcure(Surv(start, stop, fail) ~
               leadchdy1 + lcwany + independence,
             cureform = ~ lagterrch + lnccdist + 
               majpower + defense + demdy + trival,
             data = eu3,
-            brglm = F, var = T, nboot = 30); summary(l1)
+            brglm = F, var = T, nboot = 30); summary(l1_cure)
 
-l2 = tvcure(Surv(start, stop, fail) ~ 
+l2_cure = tvcure(Surv(start, stop, fail) ~ 
               leadchdy2 + lcwany + independence,
             cureform = ~ lagterrch + lnccdist + 
               majpower + defense + demdy + trival,
             data = eu3,
-            brglm = F, var = T, nboot = 30); summary(l2)
+            brglm = F, var = T, nboot = 30); summary(l2_cure)
 
-l012 = tvcure(Surv(start, stop, fail) ~ 
+l012_cure = tvcure(Surv(start, stop, fail) ~ 
               leadchdy012 + lcwany + independence,
             cureform = ~ lagterrch + lnccdist + 
               majpower + defense + demdy + trival,
             data = eu3,
-            brglm = F, var = T, nboot = 30); summary(l012)
+            brglm = F, var = T, nboot = 30); summary(l012_cure)
+
+hist(eu3$ccdistance)
+##### Leadership change cox models with PRD -------------------------------------------------
+
+l0_cox_pr = coxph(Surv(start, stop, fail) ~ leadchdy0 + lcwany + independence + lagterrch + postcolonial + colonycontig + lnccdist + 
+                onemp + twomp + defense + demdy + trival, data = eu3, subset = eu3$polrel == T); summary(l0_cox_pr)
+l1_cox_pr = coxph(Surv(start, stop, fail) ~ leadchdy1 + lcwany + independence + lagterrch + lnccdist + 
+                majpower + defense + demdy + trival, data = eu3, subset = eu3$polrel == T); summary(l1_cox_pr)
+l2_cox_pr = coxph(Surv(start, stop, fail) ~ leadchdy2 + lcwany + independence + lagterrch + lnccdist + 
+                majpower + defense + demdy + trival, data = eu3, subset = eu3$polrel == T); summary(l2_cox_pr)
+l012_cox_pr = coxph(Surv(start, stop, fail) ~ leadchdy012 + lcwany + independence + lagterrch + lnccdist + 
+                  majpower + defense + demdy + trival, data = eu3, subset = eu3$polrel == T); summary(l012_cox_pr)
 
 ##### Leadership change models w/ph -------------------------------------------------
 
@@ -115,33 +222,7 @@ l012tek = tvcure(Surv(start, stop, fail) ~
               data = eu3,
               brglm = F, var = T, nboot = 30); summary(l012tek)
 
-##### Leadership change cox models -------------------------------------------------
 
-lc0 = coxph(Surv(start, stop, fail) ~ leadchdy0 + lcwany + independence + independencelnt + 
-              lagterrch + lagterrchlnt + lnccdist + lnccdistlnt +
-               majpower + defense + demdy + trival,
-            data = eu3); summary(lc0)
-lc1 = coxph(Surv(start, stop, fail) ~ leadchdy1 + lcwany + independence + lagterrch + lnccdist + 
-              majpower + defense + demdy + trival, data = eu3); summary(lc1)
-lc2 = coxph(Surv(start, stop, fail) ~ leadchdy2 + lcwany + independence + lagterrch + lnccdist + 
-              majpower + defense + demdy + trival, data = eu3); summary(lc2)
-lc012 = coxph(Surv(start, stop, fail) ~ leadchdy012 + lcwany + independence + lagterrch + lnccdist + 
-              majpower + defense + demdy + trival, data = eu3); summary(lc012)
-cox.zph(lc0)
-cox.zph(lc1)
-cox.zph(lc2)
-cox.zph(lc012)
-
-##### Leadership change cox models -------------------------------------------------
-
-lc0pr = coxph(Surv(start, stop, fail) ~ leadchdy0 + lcwany + independence + lagterrch + lnccdist + 
-              majpower + defense + demdy + trival, data = eu3, subset = eu3$polrel == T); summary(lc0pr)
-lc1pr = coxph(Surv(start, stop, fail) ~ leadchdy1 + lcwany + independence + lagterrch + lnccdist + 
-              majpower + defense + demdy + trival, data = eu3, subset = eu3$polrel == T); summary(lc1pr)
-lc2pr = coxph(Surv(start, stop, fail) ~ leadchdy2 + lcwany + independence + lagterrch + lnccdist + 
-              majpower + defense + demdy + trival, data = eu3, subset = eu3$polrel == T); summary(lc2pr)
-lc012pr = coxph(Surv(start, stop, fail) ~ leadchdy012 + lcwany + independence + lagterrch + lnccdist + 
-                majpower + defense + demdy + trival, data = eu3, subset = eu3$polrel == T); summary(lc012pr)
 
 ##### solschange cure models --------------------------------------------------------
 
@@ -207,7 +288,7 @@ s012pr = tvcure(Surv(start, stop, fail) ~
 
 sc0 = coxph(Surv(start, stop, fail) ~ solschdy0 + lcwany + independence + independencelnt +
               lagterrch + lagterrchlnt + lnccdist + lnccdistlnt +
-              majpower + defense + demdy + trival, data = eu3); summary(sc0)
+              onemp + twomp + defense + demdy + trival, data = eu3); summary(sc0)
 sc1 = coxph(Surv(start, stop, fail) ~ solschdy1 + lcwany + independence + lagterrch + lnccdist + 
               majpower + defense + demdy + trival, data = eu3); summary(sc1)
 sc2 = coxph(Surv(start, stop, fail) ~ solschdy2 + lcwany + independence + lagterrch + lnccdist + 
@@ -262,14 +343,14 @@ int012 = tvcure(Surv(start, stop, fail) ~
 i0 = tvcure(Surv(start, stop, fail) ~ 
               pchcaprat + bdymid + systchange + ww1 + ww2 + coldwar,
             cureform = ~ lagterrch + lnccdist + 
-              majpower + defense + demdy + trival,
+              onemp + twomp + defense + demdy + trival,
             data = eu3,
             brglm = F, var = T, nboot = 30); summary(i0)
 
 i1 = tvcure(Surv(start, stop, fail) ~ 
               lpchcap + lbdymid + systchange + ww1 + ww2 + coldwar,
             cureform = ~ lagterrch + lnccdist + 
-              majpower + defense + demdy + trival,
+              onemp + twomp + defense + demdy + trival,
             data = eu3,
             brglm = F, var = T, nboot = 30); summary(i1)
 
@@ -278,3 +359,5 @@ i1 = tvcure(Surv(start, stop, fail) ~
 # Interaction effects for leadership x solschange
 # TEK Models for leadership change and solschange
 # TEK Models for international
+# Cubic splines
+# Dpol
