@@ -172,4 +172,10 @@ rename end stop
 order dyad year start stop fail
 drop pop1 stateabb1 milex1 milper1 irst1 pec1 tpop1 upop1 cinc1
 drop pop2 stateabb2 milex2 milper2 irst2 pec2 tpop2 upop2 cinc2
+
+
+keep dyad year start stop fail pchcaprat bdymid ///
+ lnccdist lagterrch ///
+ onemp twomp defense demdy trival lpchcap lbdymid ///
+ leadchdy* solschdy* regtrans* statebirth* cw* TEK ndymid* contdir majpower
 save eu3.dta, replace
