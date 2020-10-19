@@ -32,13 +32,13 @@ madd = read_csv("./data/madd.csv")
 dcap = read_dta("./data/NMC_5_0.dta")
 
 dpol = read_excel("./data/p4v2016.xls")
-dpol = select(dpol, ccode, year, polity2)
+dpol = select(dpol, ccode, year, polity2, "regtranspol" = "regtrans")
 
 dw   = read_dta("./data/bdm2s2_nation_year_data_may2002.dta") %>%
   select(ccode, year, W, S, GovCrises, strikes)
 
 chisols <- read_dta('./data/CHISOLSstyr4_0.dta')
-chisols <- dplyr::select(chisols, ccode, year, solschdum)
+chisols <- dplyr::select(chisols, ccode, year, solschdum, regtrans, demtrans, auttrans, autend)
 
 archigos = read.dta13("./data/archdum1.dta")
 archigos = archigos %>%
@@ -524,3 +524,12 @@ datlag <- dat %>%
 
 #sum(duplicated(datlag[, c("dyad", "year")]))
 write_dta(datlag, "C:/Users/gwill/Dropbox/Research/Dissertation/Data Analysis - Territory Onset/data/terrdatav2.dta", version = 13)
+
+# 
+# library(RStata)
+# chooseStataBin() # "C:/Program Files (x86)/Stata13/StataMP-64.exe"
+# stata("Data Management Terrstart Part 2.do")
+# , stata.version = 13, stata.path = 'C:/Program Files (x86)/Stata13')
+summary(cbind(leadchdy, lagleadchdy1, lagleadchdy2, solschdy, lagsolschdy2, solscht12, leadcht12, lagsolschdy2,  lagleadchdy1))
+summary(cbind(leadchdy, ))
+summary(cbind(leadchdy, ))
