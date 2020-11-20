@@ -12,107 +12,107 @@ enableJIT(3)
 
 ##### International models -------------------------------------------------
 i0_cure = tvcure(Surv(start, stop, fail) ~
-                   pchcaprat + bdymid + systchange + ww1 + ww2 + coldwar,
+                   pchcap + bdymid + systchange + ww1 + ww2 + coldwar,
                  cureform = ~ lnccdist + lagterrch + postcolonial + colonycontig + 
                    onemp + twomp + defense + demdy + trival,
-                 data = eu3,
+                 data = dyaddata,
                  brglm = F, var = T, nboot = 30); summary(i0_cure)
 
 i1_cure = tvcure(Surv(start, stop, fail) ~
                    lpchcap + lbdymid + systchange + ww1 + ww2 + coldwar,
                  cureform = ~ lnccdist + lagterrch + postcolonial + colonycontig + 
                    onemp + twomp + defense + demdy + trival,
-                 data = eu3,
+                 data = dyaddata,
                  brglm = F, var = T, nboot = 30); summary(i1_cure)
 
 ##### Leadership change models -------------------------------------------------
 l0_cure = tvcure(Surv(start, stop, fail) ~
-                   leadchdy0 + independence + regtransdy,
+                   leadch0 + independence + regtransdy,
                  cureform = ~ lnccdist + lagterrch + postcolonial + colonycontig + 
                    onemp + twomp + defense + demdy + trival,
-                 data = eu3,
+                 data = dyaddata,
                  brglm = F, var = T, nboot = 30); summary(l0_cure)
 
 l1_cure = tvcure(Surv(start, stop, fail) ~
-                   leadchdy1 + lindependence + lregtransdy,
+                   leadch1 + lindependence + lregtransdy,
                  cureform = ~ lnccdist + lagterrch + postcolonial + colonycontig + 
                    onemp + twomp + defense + demdy + trival,
-                 data = eu3,
+                 data = dyaddata,
                  brglm = F, var = T, nboot = 30); summary(l1_cure)
 
 ##### Solschange models -------------------------------------------------
 s0_cure = tvcure(Surv(start, stop, fail) ~
-                   solschdy0 + independence + regtransdy,
+                   solsch0 + independence + regtransdy,
                  cureform = ~ lnccdist + lagterrch + postcolonial + colonycontig + 
                    onemp + twomp + defense + demdy + trival,
-                 data = eu3,
+                 data = dyaddata,
                  brglm = F, var = T, nboot = 30); summary(s0_cure)
 
 s1_cure = tvcure(Surv(start, stop, fail) ~
-                   solschdy1 + lindependence + lregtransdy,
+                   solsch1 + lindependence + lregtransdy,
                  cureform = ~ lnccdist + lagterrch + postcolonial + colonycontig + 
                    onemp + twomp + defense + demdy + trival,
-                 data = eu3,
+                 data = dyaddata,
                  brglm = F, var = T, nboot = 30); summary(s1_cure)
-                   solschdy0 + independence + independencelnt + regtransdy + regtransdylnt, 
+                   solsch0 + independence + independencelnt + regtransdy + regtransdylnt, 
                  cureform = ~ lnccdist + lagterrch + postcolonial + colonycontig + 
                    onemp + twomp + defense + demdy + trival,
-                 data = eu3,
+                 data = dyaddata,
                  brglm = F, var = T, nboot = 50); summary(s0_cure1)
 
 ##### PRD models -------------------------------------------------
 s0_cox_prd = coxph(Surv(start, stop, fail) ~
-                     solschdy0 + independence + regtransdy + 
+                     solsch0 + independence + regtransdy + 
                      lnccdist + lagterrch + postcolonial + colonycontig + 
                      onemp + twomp + defense + demdy + trival,
-                   data = eu3, subset = eu3$polrel == 1); summary(s0_cox_prd)
+                   data = dyaddata, subset = dyaddata$polrel == 1); summary(s0_cox_prd)
 s1_cox_prd = coxph(Surv(start, stop, fail) ~
-                     solschdy1 + lindependence + lregtransdy + 
+                     solsch1 + lindependence + lregtransdy + 
                      lnccdist + lagterrch + postcolonial + colonycontig + 
                      onemp + twomp + defense + demdy + trival,
-                   data = eu3, subset = eu3$polrel == 1); summary(s1_cox_prd)
+                   data = dyaddata, subset = dyaddata$polrel == 1); summary(s1_cox_prd)
 l0_cox_prd = coxph(Surv(start, stop, fail) ~
-                     leadchdy0 + independence + independencelnt + regtransdy + regtransdylnt + 
+                     leadch0 + independence + independencelnt + regtransdy + regtransdylnt + 
                      lnccdist + lagterrch + postcolonial + colonycontig + 
                      onemp + twomp + defense + demdy,
-                   data = eu3, subset = eu3$polrel == 1); summary(l0_cox_prd)
+                   data = dyaddata, subset = dyaddata$polrel == 1); summary(l0_cox_prd)
 l1_cox_prd = coxph(Surv(start, stop, fail) ~
-                     leadchdy1 + lindependence + independencelnt + lregtransdy + regtransdylnt + 
+                     leadch1 + lindependence + independencelnt + lregtransdy + regtransdylnt + 
                      lnccdist + lagterrch + postcolonial + colonycontig + 
                      onemp + twomp + defense + demdy,
-                   data = eu3, subset = eu3$polrel == 1); summary(l1_cox_prd)
+                   data = dyaddata, subset = dyaddata$polrel == 1); summary(l1_cox_prd)
 s0_cox_riv = coxph(Surv(start, stop, fail) ~
-                     solschdy0 + independence + regtransdy + 
+                     solsch0 + independence + regtransdy + 
                      lnccdist + lagterrch + postcolonial + colonycontig + 
                      onemp + twomp + defense + demdy,
-                   data = eu3, subset = eu3$trival == 1); summary(s0_cox_riv)
+                   data = dyaddata, subset = dyaddata$trival == 1); summary(s0_cox_riv)
 s1_cox_riv = coxph(Surv(start, stop, fail) ~
-                     solschdy1 + lindependence + lregtransdy +
+                     solsch1 + lindependence + lregtransdy +
                      lnccdist + lagterrch + postcolonial + colonycontig + 
                      onemp + twomp + defense + demdy,
-                   data = eu3, subset = eu3$trival == 1); summary(s1_cox_riv)
+                   data = dyaddata, subset = dyaddata$trival == 1); summary(s1_cox_riv)
 l0_cox_riv = coxph(Surv(start, stop, fail) ~
-                     leadchdy0 + independence + independencelnt + regtransdy + regtransdylnt + 
+                     leadch0 + independence + independencelnt + regtransdy + regtransdylnt + 
                      lnccdist + lagterrch + postcolonial + colonycontig + 
                      onemp + twomp + defense + demdy + trival,
-                   data = eu3, subset = eu3$trival == 1); summary(l0_cox_riv)
+                   data = dyaddata, subset = dyaddata$trival == 1); summary(l0_cox_riv)
 l1_cox_riv = coxph(Surv(start, stop, fail) ~
-                     leadchdy1 + lindependence + independencelnt + lregtransdy + regtransdylnt + 
+                     leadch1 + lindependence + independencelnt + lregtransdy + regtransdylnt + 
                      lnccdist + lagterrch + postcolonial + colonycontig + 
                      onemp + twomp + defense + demdy + trival,
-                   data = eu3, subset = eu3$trival == 1); summary(l1_cox_riv)
+                   data = dyaddata, subset = dyaddata$trival == 1); summary(l1_cox_riv)
 
 ##### Civwar models -------------------------------------------------
 l0_cure_cw = tvcure(Surv(start, stop, fail) ~
-                      leadchdy0 + independence + independencelnt + regtransdy + regtransdylnt + cwany +
+                      leadch0 + independence + independencelnt + regtransdy + regtransdylnt + cwany +
                     cureform = ~ lnccdist + lagterrch + postcolonial + colonycontig + 
                       onemp + twomp + defense + demdy + trival,
-                    data = eu3, 
+                    data = dyaddata, 
                     brglm = F, var = T, nboot = 30); summary(l0_cure_cw)
 
 s0_cure_cw = tvcure(Surv(start, stop, fail) ~
-                      solschdy0 + independence + independencelnt + regtransdy + regtransdylnt + cwany,
+                      solsch0 + independence + independencelnt + regtransdy + regtransdylnt + cwany,
                     cureform = ~ lnccdist + lagterrch + postcolonial + colonycontig + 
                       onemp + twomp + defense + demdy + trival,
-                    data = eu3,
+                    data = dyaddata,
                     brglm = F, var = T, nboot = 30); summary(s0_cure_cw)
