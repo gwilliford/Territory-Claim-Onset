@@ -237,3 +237,7 @@ eu3 = eu3 %>%
     leadchdy1 = lag(leadchdy0), 
     solschdy1 = lag(solschdy0)
   )
+
+indep = eu3[eu3$independence == T & !is.na(eu3$independence), c("dyad", "year", "independence")]
+indep$independence = 1
+write.csv(indep, "C:/Users/gwill/Dropbox/Research/working projects/Owsiak Wiegand Wright/Spring 2019/independence.csv")
