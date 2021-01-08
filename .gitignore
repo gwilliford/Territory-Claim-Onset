@@ -1,5 +1,6 @@
 data/
-mods/
+manuscript/
+models/
 .RDataTmp
 .RData
 *.dta
