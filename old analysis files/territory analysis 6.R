@@ -12,10 +12,10 @@ enableJIT(3)
 
 ##### International models -------------------------------------------------
 i0_cure = tvcure(Surv(start, stop, fail) ~
-                  pchcaprat + bdymid + systchange + ww1 + ww2 + ww2lnt + coldwar,
+                  pchcap + bdymid + systchange + ww1 + ww2 + coldwar,
                 cureform = ~ lnccdist + lagterrch + postcolonial + colonycontig + 
                   onemp + twomp + defense + demdy + trival,
-                data = eu3,
+                data = terrstart,
                 brglm = F, var = T, nboot = 30); summary(i0_cure)
 
 i1_cure = tvcure(Surv(start, stop, fail) ~
