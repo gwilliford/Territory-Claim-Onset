@@ -15,49 +15,67 @@ enableJIT(3)
 ################################################################################
 terrstart = read_csv("C:/Users/gwill/Dropbox/Research/Dissertation/Data Management/outputdata/terrstart.csv")
 terrstart$lnt = log(terrstart$stop)
-terrstart$systchangelnt = terrstart$systchange * terrstart$lnt
+terrstart$solschanylnt = terrstart$solschany * terrstart$lnt
 terrstart$licblnt = terrstart$licb * terrstart$lnt
 terrstart$polrel = ifelse(terrstart$conttype < 6 | terrstart$onemp == 1 | terrstart$twomp == 1, 1, 0)
 terrstart$cont5 = ifelse(terrstart$conttype < 6, 1, 0)
 terrstart$endcoldwar = ifelse(terrstart$year == 1989, 1, 0)
 terrstart$colrace = as.numeric(terrstart$year >= 1884 & terrstart$year <= 1894)
 terrstart$decol = as.numeric(terrstart$year >= 1956 & terrstart$year <= 1962)
-terrstart$systchange = as.numeric(terrstart$year >= 1859 & terrstart$year <= 1877)
+terrstart$solschany = as.numeric(terrstart$year >= 1859 & terrstart$year <= 1877)
 terrstart$endcoldwar = as.numeric(terrstart$year >= 1989 & terrstart$year <= 1992)
+# terrstart = terrstart %>%
+#   arrange(dyad, year) %>%
+#   group_by(dyad) %>%
+#   mutate(solschany5 = as.numeric(solschany == 1 |
+#                                     lag(solschany, 1) == 1 |
+#                                     lag(solschany, 2) == 1 |
+#                                     lag(solschany, 3) == 1 |
+#                                     lag(solschany, 4) == 1 |
+#                                     lag(solschany, 5) == 1), 
+#          ww15 = as.numeric(ww1 == 1 |
+#                                     lag(ww1, 1) == 1 |
+#                                     lag(ww1, 2) == 1 |
+#                                     lag(ww1, 3) == 1 |
+#                                     lag(ww1, 4) == 1 |
+#                                     lag(ww1, 5) == 1), 
+#          ww25 = as.numeric(ww2 == 1 |
+#                                     lag(ww2, 1) == 1 |
+#                                     lag(ww2, 2) == 1 |
+#                                     lag(ww2, 3) == 1 |
+#                                     lag(ww2, 4) == 1 |
+#                                     lag(ww2, 5) == 1), 
+#          endcoldwar5 = as.numeric(endcoldwar == 1 |
+#                                     lag(endcoldwar, 1) == 1 |
+#                                     lag(endcoldwar, 2) == 1 |
+#                                     lag(endcoldwar, 3) == 1 |
+#                                     lag(endcoldwar, 4) == 1 |
+#                                     lag(endcoldwar, 5) == 1))
 terrstart = terrstart %>%
-  arrange(dyad, year) %>%
-  group_by(dyad) %>%
-  mutate(systchange5 = as.numeric(systchange == 1 |
-                                    lag(systchange, 1) == 1 |
-                                    lag(systchange, 2) == 1 |
-                                    lag(systchange, 3) == 1 |
-                                    lag(systchange, 4) == 1 |
-                                    lag(systchange, 5) == 1), 
-         ww15 = as.numeric(ww1 == 1 |
-                                    lag(ww1, 1) == 1 |
-                                    lag(ww1, 2) == 1 |
-                                    lag(ww1, 3) == 1 |
-                                    lag(ww1, 4) == 1 |
-                                    lag(ww1, 5) == 1), 
-         ww25 = as.numeric(ww2 == 1 |
-                                    lag(ww2, 1) == 1 |
-                                    lag(ww2, 2) == 1 |
-                                    lag(ww2, 3) == 1 |
-                                    lag(ww2, 4) == 1 |
-                                    lag(ww2, 5) == 1), 
-         endcoldwar5 = as.numeric(endcoldwar == 1 |
-                                    lag(endcoldwar, 1) == 1 |
-                                    lag(endcoldwar, 2) == 1 |
-                                    lag(endcoldwar, 3) == 1 |
-                                    lag(endcoldwar, 4) == 1 |
-                                    lag(endcoldwar, 5) == 1))
-
+    arrange(dyad, year) %>%
+    group_by(dyad) %>%
+    mutate(solschany5 = as.numeric(solschany == 1 |
+                                      lag(solschany, 1) == 1 |
+                                      lag(solschany, 2) == 1 |
+                                      lag(solschany, 3) == 1 |
+                                      lag(solschany, 4) == 1 |
+                                      lag(solschany, 5) == 1))
 
 ################################################################################
 # KM Plot
 ################################################################################
 
 plot(Surv(start, stop, fail) ~ 1, data = terrstart)
+
+################################################################################
+# Descriptive stats
+################################################################################
+
+table(terrstart$solschany, terrstart$fail)
+216/(459335+216)
+0.000470024
+76/(140553+76)
+0.0005404291
 
 ################################################################################
 # Solschange models
@@ -113,6 +131,22 @@ plotsch(sols_cure_sch, "solschany1")
 plotsch(sols_cure_sch, "lindependence")
 plotsch(sols_cure_sch, "lregtrans")
 plotsch(sols_cure_sch, "lcowcwany")
+
+
+sols_cure_final = tvcure(Surv(start, stop, fail) ~
+                         solsch1 + lindependence + lregtrans + lregtrans:lnt + lcowcwany + ww2 + endcoldwar,
+                       cureform = ~ contdir + lagterrch +
+                         postcolonial + colonycontig +
+                         onemp + twomp + defense + demdy + trival,
+                       data = terrstart,
+                       brglm = T, var = T)
+saveRDS(sols_cure_final, "./models/sols_cure_final.RDS")
+sols_cure_final_sch = sch(sols_cure_final)
+plotsch(sols_cure_final_sch, "solsch1")
+plotsch(sols_cure_final_sch, "lindependence")
+plotsch(sols_cure_final_sch, "ww2")
+plotsch(sols_cure_final_sch, "endcoldwar")
+
 
 # Cure model -------------------------------------------------------------------
 
@@ -218,7 +252,7 @@ icb_cure_test = tvcure(Surv(start, stop, fail) ~
 icb_cure_test_sch = sch(icb_cure_test)
 plotsch(icb_cure_test_sch, "licb")
 plotsch(icb_cure_test_sch, "lpchcap")
-plotsch(icb_cure_test_sch, "systchangeTRUE")
+plotsch(icb_cure_test_sch, "solschanyTRUE")
 plotsch(icb_cure_test_sch, "ww1TRUE")
 plotsch(icb_cure_test_sch, "ww2TRUE")
 plotsch(icb_cure_test_sch, "coldwarTRUE")
@@ -246,7 +280,7 @@ icb_cure = tvcure(Surv(start, stop, fail) ~
                   brglm = T, var = T)
 saveRDS(icb_cure, "./models/icb_cure.RDS")
 
-test = tvcure(Surv(start, stop, fail) ~ systchange + ww1 + ww2 + endcoldwar + colrace + decol,
+test = tvcure(Surv(start, stop, fail) ~ solschany + ww1 + ww2 + endcoldwar + colrace + decol,
               cureform = ~ demdy, data = terrstart, var = F, brglm = T)
 
 # Survival plots
@@ -265,12 +299,10 @@ survplot(icb_pred, "suncure") # looks better than spop
 icb_cure_sch = sch(icb_cure_nomid)
 plotsch(icb_cure_sch, "licb")
 plotsch(icb_cure_sch, "lpchcap")
-# plotsch(icb_cure_sch, "systchangeTRUE")
+# plotsch(icb_cure_sch, "solschanyTRUE")
 plotsch(icb_cure_sch, "ww1TRUE")
 plotsch(icb_cure_sch, "ww2TRUE")
 plotsch(icb_cure_sch, "coldwarTRUE")
-
-
 
 
 set.seed(2973201)
@@ -297,19 +329,18 @@ saveRDS(icb_cure_nomid, "./models/icb_cure.RDS")
 ################################################################################
 
 mid_cox = coxph(Surv(start, stop, fail) ~
-                  lbdymid + lpchcap + systchange + ww1 + ww2 + endcoldwar +
+                  lbdymid + lpchcap + solschany + ww1 + ww2 + endcoldwar +
                   contdir + lagterrch +
                   postcolonial + colonycontig +
                   onemp + twomp + defense + demdy + trival,
                 data = terrstart); mid_cox
 
 mid_cox_prd = coxph(Surv(start, stop, fail) ~
-                  lbdymid + lpchcap + systchange + ww1 + ww2 + endcoldwar +
+                  lbdymid + lpchcap + solschany + ww1 + ww2 + endcoldwar +
                   contdir + lagterrch +
                   postcolonial + colonycontig +
                   onemp + twomp + defense + demdy + trival,
                 data = terrstart, subset = terrstart$polrel == 1); mid_cox_prd
-
 
 mid_cure = tvcure(Surv(start, stop, fail) ~
                     lbdymid + lpchcap,
@@ -324,18 +355,110 @@ plotsch(mid_cure_sch, "lbdymid")
 
 
 ################################################################################
+# Midonset models
+################################################################################
+
+midonset_cure = tvcure(Surv(start, stop, fail) ~
+                    lbmidonset + lpchcap,
+                  cureform = ~ contdir + lagterrch +
+                    postcolonial + colonycontig +
+                    onemp + twomp + defense + demdy + trival,
+                  data = terrstart,
+                  brglm = T, var = T, nboot = 30)
+saveRDS(midonset_cure, "./models/midonset_cure.RDS")
+
+set.seed(68198411)
+fatonset_cure = tvcure(Surv(start, stop, fail) ~
+                         lbfatonset + lpchcap,
+                       cureform = ~ contdir + lagterrch +
+                         postcolonial + colonycontig +
+                         onemp + twomp + defense + demdy + trival,
+                       data = terrstart,
+                       brglm = T, var = T)
+saveRDS(fatonset_cure, "./models/fatonset_cure.RDS")
+
+set.seed(2928432)
+fatonset_cure2 = tvcure(Surv(start, stop, fail) ~
+                         lbfatonset + lpchcap + systchange + ww1 + ww2 + endcoldwar,
+                       cureform = ~ contdir + lagterrch +
+                         postcolonial + colonycontig +
+                         onemp + twomp + defense + demdy + trival,
+                       data = terrstart,
+                       brglm = T, var = T)
+saveRDS(fatonset_cure2, "./models/fatonset_cure2.RDS")
+fatonset_cure2_sch = sch(fatonset_cure2)
+plotsch(fatonset_cure2_sch, "lbfatonset")
+plotsch(fatonset_cure2_sch, "lpchcap")
+plotsch(fatonset_cure2_sch, "systchange")
+plotsch(fatonset_cure2_sch, "ww1")
+plotsch(fatonset_cure2_sch, "ww2")
+plotsch(fatonset_cure2_sch, "endcoldwar")
+
+set.seed(2349023)
+fatonset_cure3 = tvcure(Surv(start, stop, fail) ~
+                          lbfatonset + lpchcap,
+                        cureform = ~ contdir + lagterrch +
+                          postcolonial + colonycontig +
+                          onemp + twomp + defense + demdy + trival + 
+                          solschany + ww1 + ww2 + endcoldwar,
+                        data = terrstart,
+                        brglm = T, var = F)
+saveRDS(fatonset_cure3, "./models/fatonset_cure3.RDS")
+fatonset_cure3_sch = sch(fatonset_cure3)
+plotsch(fatonset_cure3_sch, "lbfatonset")
+plotsch(fatonset_cure3_sch, "lpchcap")
+
+fatonset_cox = coxph(Surv(start, stop, fail) ~
+                          lbfatonset + lpchcap + contdir + lagterrch +
+                          postcolonial + colonycontig +
+                          onemp + twomp + defense + demdy + trival + 
+                          solschany + ww1 + ww2 + endcoldwar,
+                        data = terrstart); summary(fatonset_cox)
+
+fatonset_cox_prd = coxph(Surv(start, stop, fail) ~
+                       lbfatonset + lpchcap + contdir + lagterrch +
+                       postcolonial + colonycontig +
+                       onemp + twomp + defense + demdy + trival + 
+                       solschany + ww1 + ww2 + endcoldwar,
+                     data = terrstart, subset = terrstart$polrel == 1); summary(fatonset_cox_prd)
+
+waronset_cure = tvcure(Surv(start, stop, fail) ~
+                         lbwaronset + lpchcap,
+                       cureform = ~ contdir + lagterrch +
+                         postcolonial + colonycontig +
+                         onemp + twomp + defense + demdy + trival,
+                       data = terrstart,
+                       brglm = T, var = F)
+saveRDS(waronset_cure, "./models/waronset_cure.RDS")
+waronset_cure_sch = sch(waronset_cure)
+plotsch(waronset_cure_sch, "lbwaronset")
+
+
+
+
+set.seed(99815681)
+icb_cure2 = tvcure(Surv(start, stop, fail) ~
+                          licb + lpchcap + ww2 + endcoldwar,
+                        cureform = ~ contdir + lagterrch +
+                          postcolonial + colonycontig +
+                          onemp + twomp + defense + demdy + trival,
+                        data = terrstart,
+                        brglm = T, var = T)
+saveRDS(icb_cure2, "./models/icb_cure2.RDS")
+
+################################################################################
 # Fatal MID models
 ################################################################################
 
 fat_cox = coxph(Surv(start, stop, fail) ~
-                   lbdyfat + lpchcap + systchange + ww1 + ww2 + endcoldwar +
+                   lbdyfat + lpchcap + solschany + ww1 + ww2 + endcoldwar +
                    contdir + lagterrch +
                    postcolonial + colonycontig +
                    onemp + twomp + defense + demdy + trival,
                  data = terrstart); fat_cox
 
 fat_cox_prd = coxph(Surv(start, stop, fail) ~
-                   lbdyfat + lpchcap + systchange + ww1 + ww2 + endcoldwar +
+                   lbdyfat + lpchcap + solschany + ww1 + ww2 + endcoldwar +
                    contdir + lagterrch +
                    postcolonial + colonycontig +
                    onemp + twomp + defense + demdy + trival,
@@ -358,14 +481,14 @@ plotsch(fat_cure_sch, "lbdyfat")
 ################################################################################
 
 war_cox = coxph(Surv(start, stop, fail) ~
-                  lbdywar + lpchcap + systchange + ww1 + ww2 + endcoldwar + 
+                  lbdywar + lpchcap + solschany + ww1 + ww2 + endcoldwar + 
                   contdir + lagterrch +
                   postcolonial + colonycontig +
                   onemp + twomp + defense + demdy + trival,
                 data = terrstart); war_cox
 
 war_cox_prd = coxph(Surv(start, stop, fail) ~
-                  lbdywar + lpchcap + systchange + ww1 + ww2 + endcoldwar + 
+                  lbdywar + lpchcap + solschany + ww1 + ww2 + endcoldwar + 
                   contdir + lagterrch +
                   postcolonial + colonycontig +
                   onemp + twomp + defense + demdy + trival,
@@ -373,7 +496,7 @@ war_cox_prd = coxph(Surv(start, stop, fail) ~
 
 set.seed(36543895)
 war_cure = tvcure(Surv(start, stop, fail) ~
-                    lbdywar + lpchcap + systchange + ww1 + ww2 + ,
+                    lbdywar + lpchcap + solschany + ww1 + ww2 + ,
                   cureform = ~ contdir + lagterrch +
                     postcolonial + colonycontig +
                     onemp + twomp + defense + demdy + trival,
@@ -386,7 +509,7 @@ plotsch(war_cure_sch, "lpchcap")
 
 set.seed(8815941898)
 war_cure_lnt = tvcure(Surv(start, stop, fail) ~
-                    lbdywar + lbdywar:lnt + lpchcap + systchange + ww1 + ww2 + endcoldwar,
+                    lbdywar + lbdywar:lnt + lpchcap + solschany + ww1 + ww2 + endcoldwar,
                   cureform = ~ contdir + lagterrch +
                     postcolonial + colonycontig +
                     onemp + twomp + defense + demdy + trival,
@@ -399,7 +522,7 @@ plotsch(war_cure_lnt_sch, "lpchcap")
 
 
 war_cure_shock = tvcure(Surv(start, stop, fail) ~
-                    lbdywar + lpchcap + systchange + ww1 + ww2 + endcoldwar,
+                    lbdywar + lpchcap + solschany + ww1 + ww2 + endcoldwar,
                   cureform = ~ contdir + lagterrch +
                     postcolonial + colonycontig +
                     onemp + twomp + defense + demdy + trival,
@@ -431,7 +554,7 @@ war_cure2 = tvcure(Surv(start, stop, fail) ~
                   cureform = ~ contdir + lagterrch +
                     postcolonial + colonycontig +
                     onemp + twomp + defense + demdy + trival + 
-                    systchange + ww1 + ww2 + endcoldwar,
+                    solschany + ww1 + ww2 + endcoldwar,
                   data = terrstart,
                   brglm = T, var = T)
 saveRDS(war_cure2, "./models/war_cure2.RDS")
