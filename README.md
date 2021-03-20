@@ -1,6 +1,6 @@
-# Replication Data for "The Domestic Proximate Causes of Territorial Claims"
+# The Domestic Proximate Causes of Territorial Claims
 
-Contains replication code and data for Chapter 3 of my dissertation, "The Domestic Proximate Causes of Territorial Claims."
+R code and data for Chapter 3 of my dissertation: George W. Williford. 2021. "The Domestic Proximate Causes of Territorial Claims."
 
 ## Project Description
 
