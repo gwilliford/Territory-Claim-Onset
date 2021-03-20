@@ -21,3 +21,4 @@ Analysis was conducted in R, version 4.01. The analysis was completed using my R
 - Ch3_Plots - contains code to recreate the plots in this chapter
 - Ch3_Tables - creates the table of results used in this chapter
 - terrstart.csv - contains data used in the analysis
+- Chapter3.pdf - the manuscript for this chapter
