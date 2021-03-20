@@ -7,3 +7,4 @@ tables/
 .RDataTmp
 .RData
 *.dta
+ModelLoad.R
