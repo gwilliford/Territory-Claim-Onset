@@ -1,4 +1,5 @@
-sols_surv = predict(sols_cure_full, "suncure", "solsch1", c(0, 1), CI = F)
+sols_cure_cw = readRDS("./models/sols_cure_cw.RDS")
+sols_surv = predict(sols_cure_cw, "suncure", "solsch1", c(0, 1), CI = F)
 sols_surv = sols_surv + xlab("Time (years)") +
   ylab("Predicted Survival Probability") +
   theme_bw() +
