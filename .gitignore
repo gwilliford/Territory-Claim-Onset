@@ -2,9 +2,10 @@ data/
 images/
 manuscript/
 models/
-old analysis files/
 tables/
+old analysis files/
 .RDataTmp
 .RData
 *.dta
 ModelLoad.R
+ch2.pdf
