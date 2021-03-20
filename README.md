@@ -13,7 +13,7 @@ When do countries initiate territorial claims? Existing research focuses on the 
 
 ## Software Used
 
-Analysis was conducted in R, version 4.01. The analysis was completed using my R package for estimating proportional hazards cure models with time-varying covariates. The package, tvcure, can be found [here](https://github.com/gwilliford/Proportional-Hazards-Cure-Models).
+Analysis was conducted in R, version 4.01. The analysis was completed using my R package for estimating proportional hazards cure models with time-varying covariates. The package, tvcure, can be found [here](https://github.com/gwilliford/tvcure).
 
 ## File Descriptions
 
